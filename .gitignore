@@ -1,2 +1,6 @@
 *.pyc
-*.txt
+__pycache__/
+
+# generated idea files, but keep the committed sample
+ideas/*.txt
+!ideas/example.txt
