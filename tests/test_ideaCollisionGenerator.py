@@ -107,6 +107,20 @@ class TestPromptForIdeas(unittest.TestCase):
 
         self.assertEqual(prompts, ["Enter an idea: "])
 
+    def testEachPairIsPrintedBeforeItsPrompt(self):
+        generator = IdeaCollisionGenerator()
+        generator.pairs = [["a", "b"], ["c", "d"]]
+        printed = io.StringIO()
+
+        with mock.patch("builtins.input", side_effect=["first", "second"]):
+            with contextlib.redirect_stdout(printed):
+                generator.promptForIdeas()
+
+        self.assertEqual(printed.getvalue(), (
+            "Enter an idea based off of these keywords: ['a', 'b']\n"
+            "Enter an idea based off of these keywords: ['c', 'd']\n"
+        ))
+
 
 class TestWriteToFile(unittest.TestCase):
     def setUp(self):
