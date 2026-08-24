@@ -63,6 +63,17 @@ in [`ideas/example.txt`](ideas/example.txt):
 Keywords are shuffled before pairing, so the pairs differ from run to run even
 when the same keywords are entered in the same order.
 
+## Tests
+
+The tests use `unittest` from the standard library. Run them from the
+repository root:
+
+```
+python3 -m unittest discover -s tests
+```
+
+Every prompt is patched, so no test waits on real input.
+
 ## License
 
 See [LICENSE](LICENSE).
