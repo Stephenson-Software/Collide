@@ -7,4 +7,5 @@ def main():
     generator.promptForIdeas()
     generator.writeToFile()
 
-main()
+if __name__ == "__main__":
+    main()
