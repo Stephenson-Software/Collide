@@ -25,3 +25,13 @@ jobs:
 
       - name: Run the test suite
         run: python -m unittest discover -s tests -v
+
+      # the suite patches every prompt, so the real stdin path documented in
+      # README.md is exercised here instead
+      - name: Run the program end to end
+        run: |
+          printf 'k%s\n' 1 2 3 4 5 6 7 8 9 10 > fixture.txt
+          printf 'idea %s\n' 1 2 3 4 5 >> fixture.txt
+          python src/collide.py < fixture.txt
+          written=$(cat ideas/ideas-*.txt | wc -l)
+          test "$written" -eq 5
