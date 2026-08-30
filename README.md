@@ -74,10 +74,10 @@ python3 -m unittest discover -s tests
 
 Every prompt is patched, so no test waits on real input.
 
-The same two commands — `py_compile` over both modules and the test suite — are
-run on every push to `main` and on every pull request by
-[`.github/workflows/tests.yml`](.github/workflows/tests.yml), against Python 3.8
-and 3.13.
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs the same
+commands on every push to `main` and on every pull request, against Python 3.8
+and 3.13: `py_compile` over both modules, the test suite, and one full run of
+the program with a 15-line fixture on stdin.
 
 ## License
 
