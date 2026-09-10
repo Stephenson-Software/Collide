@@ -154,6 +154,52 @@ class TestWriteToFile(unittest.TestCase):
         generator.writeToFile()
         self.assertTrue(os.path.isdir("ideas"))
 
+    def testSameTimestampReplacesRatherThanAppends(self):
+        # the timestamp has one-second resolution, so two runs can land on the
+        # same filename; the second one replaces the first
+        generator = IdeaCollisionGenerator()
+        generator.pairs = [["a", "b"]]
+        generator.ideas = ["first"]
+
+        frozenClock = mock.Mock()
+        frozenClock.datetime.now.return_value.strftime.return_value = "frozen"
+        with mock.patch("ideaCollisionGenerator.datetime", frozenClock):
+            generator.writeToFile()
+
+            second = IdeaCollisionGenerator()
+            second.pairs = [["c", "d"]]
+            second.ideas = ["second"]
+            second.writeToFile()
+
+        self.assertEqual(os.listdir("ideas"), ["ideas-frozen.txt"])
+        with open(os.path.join("ideas", "ideas-frozen.txt")) as f:
+            self.assertEqual(f.readlines(), ["['c', 'd']: second\n"])
+
+    def testOutputFileIsOpenedAsUtf8(self):
+        # the written bytes are the same under the platform default on every
+        # machine the tests run on, so the encoding is observed on the call
+        generator = IdeaCollisionGenerator()
+        generator.pairs = [["café", "b"]]
+        generator.ideas = ["résumé"]
+
+        realOpen = open
+        recorded = {}
+
+        def recordingOpen(path, *args, **kwargs):
+            recorded["args"] = args
+            recorded["kwargs"] = kwargs
+            return realOpen(path, *args, **kwargs)
+
+        with mock.patch("builtins.open", recordingOpen):
+            generator.writeToFile()
+
+        self.assertEqual(recorded["args"], ("w",))
+        self.assertEqual(recorded["kwargs"], {"encoding": "utf-8"})
+
+        written = os.listdir("ideas")[0]
+        with open(os.path.join("ideas", written), "rb") as f:
+            self.assertEqual(f.read().decode("utf-8"), "['café', 'b']: résumé\n")
+
     def testFilenameIsTimestamped(self):
         generator = IdeaCollisionGenerator()
         generator.pairs = [["a", "b"]]
