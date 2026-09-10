@@ -53,6 +53,6 @@ class IdeaCollisionGenerator:
         filename = "ideas/ideas-" + timestamp + ".txt"
 
         # write idea to file
-        with open(filename, "a") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             for i in range(len(self.pairs)):
                 f.write(str(self.pairs[i]) + ": " + self.ideas[i] + "\n")
