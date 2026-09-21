@@ -4,6 +4,9 @@ import os
 
 class IdeaCollisionGenerator:
     def __init__(self, numKeywords=10):
+        # keywords are matched in pairs, so the count has to be even
+        if numKeywords < 2 or numKeywords % 2 != 0:
+            raise ValueError("numKeywords must be a positive even number")
         self.numKeywords = numKeywords
         self.keywords = []
         self.pairs = []

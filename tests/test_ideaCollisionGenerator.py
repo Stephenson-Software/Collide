@@ -39,7 +39,7 @@ class TestGetKeywords(unittest.TestCase):
         self.assertEqual(prompts[9], "Enter 10th keyword: ")
 
     def testPromptsAreCorrectPastTwenty(self):
-        generator = IdeaCollisionGenerator(numKeywords=23)
+        generator = IdeaCollisionGenerator(numKeywords=24)
         prompts = []
 
         def recordingInput(prompt):
@@ -63,6 +63,15 @@ class TestGetKeywords(unittest.TestCase):
 
     def testKeywordCountDefaultsToTen(self):
         self.assertEqual(IdeaCollisionGenerator().numKeywords, 10)
+
+    def testOddKeywordCountIsRejected(self):
+        # createPairs() needs an even count, so it is refused up front
+        with self.assertRaises(ValueError):
+            IdeaCollisionGenerator(numKeywords=3)
+
+    def testNonPositiveKeywordCountIsRejected(self):
+        with self.assertRaises(ValueError):
+            IdeaCollisionGenerator(numKeywords=0)
 
     def testKeywordsAreShuffled(self):
         generator = IdeaCollisionGenerator()
