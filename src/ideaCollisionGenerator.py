@@ -3,27 +3,34 @@ import random
 import os
 
 class IdeaCollisionGenerator:
-    def __init__(self):
+    def __init__(self, numKeywords=10):
+        # keywords are matched in pairs, so the count has to be even
+        if numKeywords < 2 or numKeywords % 2 != 0:
+            raise ValueError("numKeywords must be a positive even number")
+        self.numKeywords = numKeywords
         self.keywords = []
         self.pairs = []
         self.ideas = []
 
+    def ordinal(self, n):
+        # 1st, 2nd, 3rd, 4th ... 11th, 12th, 13th ... 21st, 22nd, 23rd
+        if n % 100 in (11, 12, 13):
+            suffix = "th"
+        elif n % 10 == 1:
+            suffix = "st"
+        elif n % 10 == 2:
+            suffix = "nd"
+        elif n % 10 == 3:
+            suffix = "rd"
+        else:
+            suffix = "th"
+        return str(n) + suffix
+
     def getKeywords(self):
-        # get 10 keywords from user
-        numKeywords = 10
-        for i in range(numKeywords):
-            if i == 0:
-                keyword = input("Enter 1st keyword: ")
-                self.keywords.append(keyword)
-            elif i == 1:
-                keyword = input("Enter 2nd keyword: ")
-                self.keywords.append(keyword)
-            elif i == 2:
-                keyword = input("Enter 3rd keyword: ")
-                self.keywords.append(keyword)
-            else:
-                keyword = input("Enter " + str(i+1) + "th keyword: ")
-                self.keywords.append(keyword)
+        # get keywords from user
+        for i in range(self.numKeywords):
+            keyword = input("Enter " + self.ordinal(i+1) + " keyword: ")
+            self.keywords.append(keyword)
 
         # randomize keywords
         random.shuffle(self.keywords)

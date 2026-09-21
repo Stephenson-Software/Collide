@@ -38,6 +38,41 @@ class TestGetKeywords(unittest.TestCase):
         self.assertEqual(prompts[3], "Enter 4th keyword: ")
         self.assertEqual(prompts[9], "Enter 10th keyword: ")
 
+    def testPromptsAreCorrectPastTwenty(self):
+        generator = IdeaCollisionGenerator(numKeywords=24)
+        prompts = []
+
+        def recordingInput(prompt):
+            prompts.append(prompt)
+            return "keyword"
+
+        with mock.patch("builtins.input", recordingInput):
+            with mock.patch("random.shuffle"):
+                generator.getKeywords()
+
+        self.assertEqual(prompts[20], "Enter 21st keyword: ")
+        self.assertEqual(prompts[21], "Enter 22nd keyword: ")
+        self.assertEqual(prompts[22], "Enter 23rd keyword: ")
+
+    def testKeywordCountIsConfigurable(self):
+        generator = IdeaCollisionGenerator(numKeywords=4)
+        with mock.patch("builtins.input", side_effect=["a", "b", "c", "d"]):
+            with mock.patch("random.shuffle"):
+                generator.getKeywords()
+        self.assertEqual(generator.keywords, ["a", "b", "c", "d"])
+
+    def testKeywordCountDefaultsToTen(self):
+        self.assertEqual(IdeaCollisionGenerator().numKeywords, 10)
+
+    def testOddKeywordCountIsRejected(self):
+        # createPairs() needs an even count, so it is refused up front
+        with self.assertRaises(ValueError):
+            IdeaCollisionGenerator(numKeywords=3)
+
+    def testNonPositiveKeywordCountIsRejected(self):
+        with self.assertRaises(ValueError):
+            IdeaCollisionGenerator(numKeywords=0)
+
     def testKeywordsAreShuffled(self):
         generator = IdeaCollisionGenerator()
         with mock.patch("builtins.input", side_effect=[str(i) for i in range(10)]):
@@ -52,6 +87,19 @@ class TestGetKeywords(unittest.TestCase):
             with mock.patch("random.shuffle"):
                 generator.getKeywords()
         self.assertEqual(generator.keywords, [""] * 10)
+
+
+class TestOrdinal(unittest.TestCase):
+    def testSuffixes(self):
+        generator = IdeaCollisionGenerator()
+        expected = {
+            1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 10: "10th",
+            11: "11th", 12: "12th", 13: "13th", 14: "14th",
+            21: "21st", 22: "22nd", 23: "23rd", 24: "24th",
+            101: "101st", 111: "111th", 112: "112th", 113: "113th", 121: "121st",
+        }
+        for n, text in expected.items():
+            self.assertEqual(generator.ordinal(n), text)
 
 
 class TestCreatePairs(unittest.TestCase):
