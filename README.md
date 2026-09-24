@@ -8,7 +8,7 @@ shown in turn, and the idea entered for it is written to a timestamped file.
 ## Requirements
 
 - Python 3.8 or later
-- No third-party dependencies — only `datetime`, `random`, and `os` from the standard library
+- No third-party dependencies — only the standard library (the vendored usage-reporting client in `src/trace_client.py` included)
 
 ## Usage
 
@@ -78,6 +78,40 @@ Every prompt is patched, so no test waits on real input.
 commands on every push to `main` and on every pull request, against Python 3.8
 and 3.13: `py_compile` over both modules, the test suite, and one full run of
 the program with a 15-line fixture on stdin.
+
+## Usage reporting
+
+Usage reporting is on by default: Collide sends its name (`Collide`), its version and the events
+`startup` (when the program starts) and `ideas-written` (when a session's ideas have been saved)
+to [trace](https://github.com/Stephenson-Software/trace) at `https://trace.danielstephenson.dev`.
+Nothing about you, your machine, your IP address, the keywords or the ideas is sent. The report
+is made from a background thread, never blocks the program, and is dropped silently if the
+service is unreachable.
+
+The first launch writes a `settings.json` at the repository root and prints a one-line notice.
+To turn reporting off, any one of these is enough:
+
+- `"usage_reporting": {"enabled": false}` in `settings.json`:
+
+  ```json
+  {
+    "usage_reporting": {
+      "enabled": false
+    }
+  }
+  ```
+
+- the environment variable `TRACE_USAGE_REPORTING=off` (also `false`, `0`, `no`), which turns off
+  every program that reports to trace
+- the environment variable `DO_NOT_TRACK=1` (see [consoledonottrack.com](https://consoledonottrack.com))
+
+The environment variables win over `settings.json`. The `endpoint` and `key` entries in the same
+block select where reports go and the key they are sent with. The client is `src/trace_client.py`,
+vendored from [trace-client-python](https://github.com/Stephenson-Software/trace-client-python);
+the settings handling is in `src/usage_reporting.py`. Only a command-line run reports; the test
+suite's direct `main()` calls do not, and the CI run sets `TRACE_USAGE_REPORTING=off`.
+
+Details: https://github.com/Stephenson-Software/trace#usage-reporting
 
 ## License
 

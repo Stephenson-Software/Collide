@@ -55,6 +55,26 @@ class TestEntryPoint(unittest.TestCase):
             lines = f.readlines()
         self.assertEqual(len(lines), 5)
 
+    def testDirectMainCallDoesNotStartUsageReporting(self):
+        with mock.patch("builtins.input", lambda prompt="": "keyword"):
+            with contextlib.redirect_stdout(io.StringIO()):
+                import collide
+                with mock.patch("collide.startUsageReporting") as start:
+                    collide.main()
+
+        start.assert_not_called()
+
+    def testCommandLineRunReportsIdeasWrittenAfterSaving(self):
+        with mock.patch("builtins.input", lambda prompt="": "keyword"):
+            with contextlib.redirect_stdout(io.StringIO()):
+                import collide
+                with mock.patch("collide.startUsageReporting") as start:
+                    collide.main(reportUsage=True)
+
+        start.assert_called_once_with()
+        start.return_value.report.assert_called_once_with("ideas-written")
+        self.assertEqual(len(os.listdir("ideas")), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
