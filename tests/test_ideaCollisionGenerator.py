@@ -120,13 +120,20 @@ class TestCreatePairs(unittest.TestCase):
         generator.createPairs()
         self.assertEqual(generator.pairs, [])
 
-    def testOddKeywordCountRaisesIndexError(self):
-        # current behaviour: keywords[i+1] is unguarded, so the final iteration
-        # indexes past the end (unreachable through the CLI, where the count is 10)
+    def testOddKeywordCountRaisesValueError(self):
+        # a trailing keyword with no partner is refused rather than indexed past
         generator = IdeaCollisionGenerator()
         generator.keywords = ["a", "b", "c"]
-        with self.assertRaises(IndexError):
+        with self.assertRaisesRegex(ValueError, "even count"):
             generator.createPairs()
+
+    def testOddKeywordCountCreatesNoPairs(self):
+        # the count is checked before any pair is made, so nothing half-built is left behind
+        generator = IdeaCollisionGenerator()
+        generator.keywords = ["a", "b", "c"]
+        with self.assertRaises(ValueError):
+            generator.createPairs()
+        self.assertEqual(generator.pairs, [])
 
 
 class TestPromptForIdeas(unittest.TestCase):

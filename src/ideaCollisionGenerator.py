@@ -36,6 +36,11 @@ class IdeaCollisionGenerator:
         random.shuffle(self.keywords)
 
     def createPairs(self):
+        # an odd keyword would be left without a partner, so it is refused
+        # the same way the constructor refuses an odd numKeywords
+        if len(self.keywords) % 2 != 0:
+            raise ValueError("keywords must have an even count to be paired, got " + str(len(self.keywords)))
+
         # match keywords in pairs
         for i in range(0, len(self.keywords), 2):
             pair = []
