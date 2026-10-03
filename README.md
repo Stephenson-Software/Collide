@@ -82,13 +82,22 @@ full run of the program with a 15-line fixture on stdin.
 ## Usage reporting
 
 Usage reporting is on by default: Collide sends its name (`Collide`), its version and the events
-`startup` (when the program starts) and `ideas-written` (when a session's ideas have been saved)
-to [trace](https://github.com/Stephenson-Software/trace) at `https://trace.danielstephenson.dev`.
-Nothing about you, your machine, your IP address, the keywords or the ideas is sent. The report
-is made from a background thread, never blocks the program, and is dropped silently if the
-service is unreachable.
+`startup` (when the program starts) and `ideas-written` (when a session's ideas have been saved) to
+[trace](https://github.com/Stephenson-Software/trace) at `https://trace.danielstephenson.dev`.
+Every event also carries a random installation ID (the tag `install`) so installations can be
+counted rather than events. Nothing about you, your machine, your IP address, the keywords or the
+ideas is sent. The report is made from a background thread, never blocks the program, and is
+dropped silently if the service is unreachable.
 
 The first launch writes a `settings.json` at the repository root and prints a one-line notice.
+
+The installation ID is a random UUID kept in a file named `trace-install-id` in the user data
+directory: `~/.local/share/collide/` on Linux (or `$XDG_DATA_HOME/collide/`),
+`~/Library/Application Support/collide/` on macOS and `%APPDATA%\collide\` on Windows. It
+identifies no person, account or address; delete the file to get a new one. Setting the environment
+variable `TRACE_INSTALL_ID` sends that value instead and leaves the file alone. The file is only
+created while reporting is on, so every opt-out below also stops it.
+
 To turn reporting off, any one of these is enough:
 
 - `"usage_reporting": {"enabled": false}` in `settings.json`:
