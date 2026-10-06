@@ -83,7 +83,7 @@ full run of the program with a 15-line fixture on stdin.
 
 Usage reporting is on by default: Collide sends its name (`Collide`), its version and the events
 `startup` (when the program starts) and `ideas-written` (when a session's ideas have been saved) to
-[trace](https://github.com/Stephenson-Software/trace) at `https://trace.danielstephenson.dev`.
+[trace](https://danielstephenson.dev/usage-reporting) at `https://trace.danielstephenson.dev`.
 Every event also carries a random installation ID (the tag `install`) so installations can be
 counted rather than events. Nothing about you, your machine, your IP address, the keywords or the
 ideas is sent. The report is made from a background thread, never blocks the program, and is
@@ -120,7 +120,7 @@ vendored from [trace-client-python](https://github.com/Stephenson-Software/trace
 the settings handling is in `src/usage_reporting.py`. Only a command-line run reports; the test
 suite's direct `main()` calls do not, and the CI run sets `TRACE_USAGE_REPORTING=off`.
 
-Details: https://github.com/Stephenson-Software/trace#usage-reporting
+Details: https://danielstephenson.dev/usage-reporting
 
 ## License
 
