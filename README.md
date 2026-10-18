@@ -2,6 +2,10 @@
 
 Allows the user to generate ideas from the collisions of paired keywords.
 
+![A real Collide session: ten keywords, five shuffled pairs and an idea for each](docs/images/collide.gif)
+
+*A real session: ten keywords go in, are shuffled into five pairs, and the ideas typed for them are saved to `ideas/`.*
+
 Ten keywords are collected, shuffled, and matched into five pairs. Each pair is
 shown in turn, and the idea entered for it is written to a timestamped file.
 
@@ -121,6 +125,10 @@ the settings handling is in `src/usage_reporting.py`. Only a command-line run re
 suite's direct `main()` calls do not, and the CI run sets `TRACE_USAGE_REPORTING=off`.
 
 Details: https://danielstephenson.dev/usage-reporting
+
+## How the screenshot was captured
+
+`docs/images/collide.gif` was recorded on 2026-10-18 from a real run of `python3 src/collide.py` (Python 3.12) from the repository root, followed by `cat` of the ideas file it wrote, with `TRACE_USAGE_REPORTING=off` set so that no usage reports were sent. The pairs are the program's own shuffle; the script that typed the input wrote an idea from a short template for whichever pair was shown. The program was started in a pseudo-terminal, the input shown was typed into it by a script, and the recorded terminal output was rendered to an image with [pyte](https://github.com/selectel/pyte) and [Pillow](https://python-pillow.org/). Nothing in the output was edited; only the window frame was added.
 
 ## License
 
