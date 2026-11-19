@@ -114,9 +114,15 @@ To turn reporting off, any one of these is enough:
   }
   ```
 
-- the environment variable `TRACE_USAGE_REPORTING=off` (also `false`, `0`, `no`), which turns off
-  every program that reports to trace
-- the environment variable `DO_NOT_TRACK=1` (see [consoledonottrack.com](https://consoledonottrack.com))
+- the environment variable `TRACE_USAGE_REPORTING=off`, which turns off every program that reports
+  to trace; any value but blank, `true`, `on`, `yes` or `1` does (`false`, `0`, `no`, a typo, ...)
+- the environment variable `DO_NOT_TRACK=1` (see [consoledonottrack.com](https://consoledonottrack.com));
+  any value but blank, `0`, `false`, `off` or `no` does
+
+Every switch fails closed: `enabled` keeps reporting on only when it is `true` (or the string
+`"true"`, `"on"`, `"yes"` or `"1"`), so `"false"`, `"off"`, `null` or a typo turn it off, and so does
+`"usage_reporting": false` in place of the block. Collide never rewrites a `usage_reporting` entry
+that is already there, so an opt-out stays put.
 
 The environment variables win over `settings.json`. The `endpoint` and `key` entries in the same
 block select where reports go and the key they are sent with. The client is `src/trace_client.py`,

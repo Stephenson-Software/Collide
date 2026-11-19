@@ -139,6 +139,43 @@ class TestUsageReportingSettings(unittest.TestCase):
         self.assertEqual([], self.logged)
         self.assertEqual({"usage_reporting": {"enabled": False}}, self.readSettingsFile())
 
+    def test_enabled_that_does_not_clearly_mean_on_turns_reporting_off(self):
+        # bool("false") is True: a quoted or misspelt opt-out must still be an opt-out.
+        for value in ("false", "False", "off", "no", "0", "", None, 0, 1, "nope", [], {}):
+            with self.subTest(enabled=value):
+                client = buildClient({"enabled": value})
+                self.assertFalse(client.enabled)
+                self.assertEqual("config", client.disabled_reason)
+
+    def test_enabled_strings_that_mean_on_keep_reporting_on(self):
+        for value in (True, "true", "on", "yes", "1", " TRUE "):
+            with self.subTest(enabled=value):
+                self.assertTrue(buildClient({"enabled": value}).enabled)
+
+    def test_a_quoted_opt_out_in_the_settings_file_is_respected_and_not_rewritten(self):
+        with open(self.settingsFile, "w") as f:
+            json.dump({"usage_reporting": {"enabled": "false"}}, f)
+
+        client = buildClient(loadSettings(self.settingsFile, self.log))
+
+        self.assertFalse(client.enabled)
+        self.assertEqual([], self.logged)
+        self.assertEqual({"usage_reporting": {"enabled": "false"}}, self.readSettingsFile())
+
+    def test_a_usage_reporting_value_that_is_not_a_block_is_an_opt_out_and_not_rewritten(self):
+        # "usage_reporting": false used to be replaced by the default block, turning reporting on.
+        for value in (False, "off", None, 0):
+            with self.subTest(usage_reporting=value):
+                with open(self.settingsFile, "w") as f:
+                    json.dump({"usage_reporting": value}, f)
+                self.logged.clear()
+
+                client = buildClient(loadSettings(self.settingsFile, self.log))
+
+                self.assertFalse(client.enabled)
+                self.assertEqual([], self.logged)
+                self.assertEqual({"usage_reporting": value}, self.readSettingsFile())
+
     def test_unreadable_settings_file_disables_reporting_without_raising(self):
         with open(self.settingsFile, "w") as f:
             f.write("{not json")
