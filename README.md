@@ -122,7 +122,7 @@ To turn reporting off, any one of these is enough:
 Every switch fails closed: `enabled` keeps reporting on only when it is `true` (or the string
 `"true"`, `"on"`, `"yes"` or `"1"`), so `"false"`, `"off"`, `null` or a typo turn it off, and so does
 `"usage_reporting": false` in place of the block. Collide never rewrites a `usage_reporting` entry
-that is already there, so an opt-out stays put.
+that is already there, so an opt-out stays put. Other spellings count as off too: a block written as `"usage-reporting"`, `"usageReporting"` or `"UsageReporting"` (or any spelling of "usage reporting") holding `false` or `"enabled": false`, and inside the block `"enable": false`, `"Enabled": false` or `"disabled": true`; the real `usage_reporting` block is then written with `"enabled": false` next to it rather than with reporting on.
 
 The environment variables win over `settings.json`. The `endpoint` and `key` entries in the same
 block select where reports go and the key they are sent with. The client is `src/trace_client.py`,
